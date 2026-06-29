@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tab Knowledge Graph</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── Top bar ── -->
+    <header id="topbar">
+      <div id="topbar-left">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <circle cx="9" cy="4" r="2.5" fill="#6382ff"/>
+          <circle cx="3" cy="13" r="2.5" fill="#3db885"/>
+          <circle cx="15" cy="13" r="2.5" fill="#e8873a"/>
+          <line x1="9" y1="6.5" x2="3" y2="10.5" stroke="#6382ff" stroke-width="1" stroke-opacity="0.6"/>
+          <line x1="9" y1="6.5" x2="15" y2="10.5" stroke="#6382ff" stroke-width="1" stroke-opacity="0.6"/>
+          <line x1="3" y1="13" x2="15" y2="13" stroke="#888" stroke-width="1" stroke-opacity="0.3"/>
+        </svg>
+        <span id="tab-counter">0 tabs</span>
+      </div>
+      <div id="topbar-right">
+        <select id="theme-mode" class="toolbar-select" title="Theme">
+          <option value="system">System</option>
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
+        <div class="btn-group font-group" title="Text size">
+          <button class="seg-btn font-btn" data-font-size="small">A</button>
+          <button class="seg-btn font-btn active" data-font-size="medium">A</button>
+          <button class="seg-btn font-btn" data-font-size="large">A</button>
+        </div>
+        <button class="icon-btn" id="btn-refresh" title="Refresh graph">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M12 2.5A6 6 0 1 1 2 8.5"/>
+            <path d="M2 5.5V2.5H5"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btn-nl-search" title="Search by meaning (AI)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="5.5" cy="5.5" r="3.5"/>
+            <path d="M8.5 8.5l3 3"/>
+            <path d="M5.5 4v3M4 5.5h3" stroke-width="1.2"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btn-history" title="Session history">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="7" cy="7" r="5.5"/>
+            <path d="M7 4v3.5l2 1.5"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btn-export" title="Export graph">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 1v8M4 6l3 3 3-3"/>
+            <path d="M2 10v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btn-settings" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="7" cy="7" r="1.5"/>
+            <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.5 2.5l1 1M10.5 10.5l1 1M11.5 2.5l-1 1M3.5 10.5l-1 1"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Controls ── -->
+    <div id="controls">
+      <div class="control-row">
+        <span class="ctrl-label">Search</span>
+        <input type="search" id="search-input" placeholder="Filter tabs…" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="control-row">
+        <span class="ctrl-label">Window</span>
+        <select id="window-filter" class="toolbar-select" style="max-width:none;flex:1">
+          <option value="all">All windows</option>
+        </select>
+      </div>
+      <div class="control-row">
+        <span class="ctrl-label">Layout</span>
+        <div class="btn-group">
+          <button class="seg-btn active" data-layout="force">Force</button>
+          <button class="seg-btn" data-layout="cluster">Cluster</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <span class="ctrl-label">Bookmarks</span>
+        <label class="toggle-label">
+          <input type="checkbox" id="bookmarks-toggle" />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span id="bookmarks-status" style="font-size:10px;color:var(--text-muted);margin-left:6px"></span>
+        </label>
+      </div>
+      <div class="control-row">
+        <span class="ctrl-label">Edge threshold</span>
+        <input type="range" id="threshold-slider" min="20" max="90" value="45" step="1" />
+        <span id="threshold-val">45%</span>
+      </div>
+    </div>
+
+    <!-- ── Graph canvas ── -->
+    <div id="graph-wrap">
+      <canvas id="graph-canvas"></canvas>
+      <div id="empty-state" hidden>
+        <p>No tabs indexed yet.</p>
+        <p style="font-size:11px;opacity:0.5;margin-top:4px">Browse some pages and click Refresh.</p>
+      </div>
+    </div>
+
+    <!-- ── Node detail panel ── -->
+    <div id="detail-panel" class="hidden">
+      <div id="detail-resize-handle" title="Resize details"></div>
+      <div id="detail-header">
+        <div id="detail-favicon-wrap">
+          <div id="detail-favicon"></div>
+        </div>
+        <div id="detail-meta">
+          <div id="detail-domain"></div>
+          <div id="detail-title"></div>
+        </div>
+        <button class="icon-btn" id="btn-close-detail">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M1 1l10 10M11 1L1 11"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="detail-cluster-badge"></div>
+
+      <div id="detail-scroll">
+
+        <section class="detail-section" id="sec-summary">
+          <div class="sec-label">Summary</div>
+          <div class="sec-content" id="summary-content">
+            <div class="skeleton-lines">
+              <div class="sk-line w80"></div>
+              <div class="sk-line w95"></div>
+              <div class="sk-line w70"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-section" id="sec-kp">
+          <div class="sec-label">Key points</div>
+          <div class="sec-content" id="kp-content"></div>
+        </section>
+
+        <section class="detail-section" id="sec-related">
+          <div class="sec-label">Related tabs</div>
+          <div class="sec-content" id="related-content"></div>
+        </section>
+
+        <section class="detail-section" id="sec-web">
+          <div class="sec-label">Web context</div>
+          <div class="sec-content" id="web-content">
+            <div class="skeleton-lines">
+              <div class="sk-line w90"></div>
+              <div class="sk-line w60"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-section" id="sec-recommendations">
+          <div class="sec-label">You might want to open</div>
+          <div class="sec-content" id="recommendations-content">
+            <div class="skeleton-lines">
+              <div class="sk-line w80"></div>
+              <div class="sk-line w60"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-section" id="sec-notes">
+          <div class="sec-label">Notes</div>
+          <div class="sec-content">
+            <textarea id="note-input" placeholder="Add a note about this page…" rows="3"></textarea>
+            <span id="note-status"></span>
+          </div>
+        </section>
+
+      </div>
+
+      <div id="detail-footer">
+        <button id="btn-pin-tab" title="Keep in graph after closing">Pin</button>
+        <button id="btn-open-tab">Open tab</button>
+        <button id="btn-focus-tab">Switch to tab</button>
+      </div>
+    </div>
+
+    <!-- ── Natural language query bar ── -->
+    <div id="nl-bar" class="hidden">
+      <input type="text" id="nl-input" placeholder="Find tabs about… (press Enter)" autocomplete="off" spellcheck="false" />
+      <button class="icon-btn" id="btn-nl-close" title="Clear">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M1 1l9 9M10 1L1 10"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- ── Cluster context menu ── -->
+    <div id="cluster-menu" class="hidden">
+      <div id="cluster-menu-title">Move to cluster</div>
+      <div id="cluster-menu-options"></div>
+    </div>
+
+    <!-- ── Session history drawer ── -->
+    <div id="history-drawer" class="hidden">
+      <div id="history-header">
+        <span>Session history</span>
+        <button class="icon-btn" id="btn-close-history">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M1 1l10 10M11 1L1 11"/>
+          </svg>
+        </button>
+      </div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- ── Legend ── -->
+    <div id="legend">
+      <!-- populated by JS -->
+    </div>
+
+  </div>
+
+  <script src="src/sidepanel.js" type="module"></script>
+</body>
+</html>

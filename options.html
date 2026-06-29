@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tab Knowledge Graph — Settings</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      background: #0d0f14;
+      color: rgba(255,255,255,0.82);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+    .page { width: 100%; max-width: 480px; }
+
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+    .logo svg { flex-shrink: 0; }
+    .logo-title { font-size: 16px; font-weight: 500; }
+    .logo-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 1px; }
+
+    .card {
+      background: #13151c;
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+    }
+    .card-title { font-size: 12px; font-weight: 500; margin-bottom: 4px; }
+    .card-desc  { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.5; margin-bottom: 16px; }
+
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 10px; color: rgba(255,255,255,0.45); margin-bottom: 5px; letter-spacing: 0.04em; text-transform: uppercase; }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      background: #1a1d26;
+      border: 0.5px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: rgba(255,255,255,0.82);
+      font-size: 12px;
+      font-family: monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: rgba(99,130,255,0.5); }
+    .key-hint { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+    .key-hint a { color: #6382ff; text-decoration: none; }
+
+    .field-row { display: flex; gap: 8px; align-items: flex-end; }
+    .field-row .field { flex: 1; margin-bottom: 0; }
+    .show-btn {
+      background: #1a1d26;
+      border: 0.5px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.4);
+      border-radius: 6px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .save-row { display: flex; align-items: center; gap: 10px; margin-top: 20px; }
+    #btn-save {
+      background: rgba(99,130,255,0.15);
+      border: 0.5px solid rgba(99,130,255,0.35);
+      color: #a0aaff;
+      border-radius: 6px;
+      padding: 8px 20px;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    #btn-save:hover { background: rgba(99,130,255,0.25); }
+    #save-status { font-size: 11px; color: rgba(100,220,130,0.8); opacity: 0; transition: opacity 0.3s; }
+    #save-status.show { opacity: 1; }
+
+    .section-title { font-size: 11px; font-weight: 500; margin-bottom: 10px; color: rgba(255,255,255,0.6); }
+    .config-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 0.5px solid rgba(255,255,255,0.05); }
+    .config-row:last-child { border-bottom: none; }
+    .config-label { font-size: 11px; color: rgba(255,255,255,0.6); }
+    .config-hint  { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+    .config-value { font-size: 11px; }
+    input[type="range"] { accent-color: #6382ff; width: 100px; }
+    input[type="number"] {
+      background: #1a1d26;
+      border: 0.5px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 4px 6px;
+      color: rgba(255,255,255,0.82);
+      font-size: 11px;
+      width: 60px;
+      text-align: right;
+    }
+
+    .about { font-size: 10px; color: rgba(255,255,255,0.25); text-align: center; margin-top: 24px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="6"  r="4" fill="#6382ff"/>
+      <circle cx="4"  cy="22" r="4" fill="#3db885"/>
+      <circle cx="24" cy="22" r="4" fill="#e8873a"/>
+      <line x1="14" y1="10" x2="4"  y2="18" stroke="#6382ff" stroke-width="1.5" stroke-opacity="0.5"/>
+      <line x1="14" y1="10" x2="24" y2="18" stroke="#6382ff" stroke-width="1.5" stroke-opacity="0.5"/>
+      <line x1="4"  y1="22" x2="24" y2="22" stroke="#888"    stroke-width="1.5" stroke-opacity="0.25"/>
+    </svg>
+    <div>
+      <div class="logo-title">Tab Knowledge Graph</div>
+      <div class="logo-sub">Settings</div>
+    </div>
+  </div>
+
+  <!-- API Keys -->
+  <div class="card">
+    <div class="card-title">API keys</div>
+    <div class="card-desc">Your key is stored locally in Chrome's storage and only sent to OpenAI for embeddings, summaries, related-tab reasoning, and web context.</div>
+
+    <div class="field">
+      <label>OpenAI API Key</label>
+      <div class="field-row">
+        <div class="field">
+          <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off" spellcheck="false"/>
+        </div>
+        <button class="show-btn" id="show-openai-key" data-target="openai-key">Show</button>
+      </div>
+      <div class="key-hint">Get yours at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a></div>
+    </div>
+  </div>
+
+  <!-- Graph config -->
+  <div class="card">
+    <div class="card-title">Graph settings</div>
+
+    <div class="config-row">
+      <div>
+        <div class="config-label">Edge threshold</div>
+        <div class="config-hint">Minimum similarity to draw a connection</div>
+      </div>
+      <div class="config-value" style="display:flex;align-items:center;gap:8px">
+        <input type="range" id="cfg-threshold" min="20" max="90" value="45" step="5"/>
+        <span id="cfg-threshold-val">45%</span>
+      </div>
+    </div>
+
+    <div class="config-row">
+      <div>
+        <div class="config-label">Semantic weight (α)</div>
+        <div class="config-hint">Balance between embedding similarity and entity overlap</div>
+      </div>
+      <div class="config-value" style="display:flex;align-items:center;gap:8px">
+        <input type="range" id="cfg-alpha" min="0" max="100" value="75" step="5"/>
+        <span id="cfg-alpha-val">75%</span>
+      </div>
+    </div>
+
+    <div class="config-row">
+      <div>
+        <div class="config-label">Page text limit</div>
+        <div class="config-hint">Characters sent to embedding API per tab</div>
+      </div>
+      <div class="config-value">
+        <input type="number" id="cfg-text-limit" value="6000" min="1000" max="12000" step="500"/>
+      </div>
+    </div>
+
+    <div class="config-row">
+      <div>
+        <div class="config-label">Local embeddings</div>
+        <div class="config-hint">Use on-device model — no API key needed, ~23 MB download once</div>
+      </div>
+      <div class="config-value">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="cfg-local-embeddings" style="accent-color:#6382ff;width:13px;height:13px"/>
+          <span style="font-size:11px;color:rgba(255,255,255,0.5)">Enable</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="save-row">
+    <button id="btn-save">Save settings</button>
+    <span id="save-status">✓ Saved</span>
+  </div>
+
+  <div class="about">Tab Knowledge Graph · v1.0.0<br>Key stored in chrome.storage.local · sent only to OpenAI API requests</div>
+
+</div>
+<script src="src/options.js"></script>
+</body>
+</html>

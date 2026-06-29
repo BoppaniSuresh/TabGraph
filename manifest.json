@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Knowledge Graph",
+  "version": "1.0.0",
+  "description": "Visualise your open tabs as an interactive knowledge graph with AI-powered summaries and semantic connections.",
+
+  "permissions": [
+    "tabs",
+    "storage",
+    "sidePanel",
+    "scripting",
+    "activeTab",
+    "history",
+    "bookmarks"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+
+  "options_page": "options.html",
+
+  "action": {
+    "default_title": "Open Tab Graph",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["src/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
